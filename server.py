@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 
-import sys
+import sys, threading
 from http.server import HTTPServer, SimpleHTTPRequestHandler#, httplib
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QFileDialog, QPushButton, QCheckBox, QVBoxLayout, QLabel
 
 SERVER_IP  = ""
 SERVER_DIR = ""
 
-#TODO change server launch to subprocess
+#TODO change server launch to threading
+
 def server():
 	print(dirpath.text())
 	if localOnly:
+		print("launching")
 		s = HTTPServer(('localhost', 8000), SimpleHTTPRequestHandler)
 	else:
 		exit()
-	s.serve_forever()
-	return s
+	thread = threading.Thread(target = s.serve_forever)
+	thread.daemon = True
 
 def kill_server():
 	try:
-		s.force_stop()
+		s.shutdown()
 	except:
 		print("Server not running")
 
@@ -37,7 +39,7 @@ dirpath = QLineEdit()
 
 #connect start button to server function
 run_btn = QPushButton('Start Server')
-s = run_btn.clicked.connect(server)
+run_btn.clicked.connect(server)
 
 #kill server
 kill_btn = QPushButton('Kill Server')
